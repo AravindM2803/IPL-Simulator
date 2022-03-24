@@ -1,0 +1,48 @@
+# ignore __pycache__
+__pycache__
+
+# ignore VS Code
+.vscode
+settings.json
+
+# ignore jupyter checkpoints
+.ipynb_checkpoints
+
+# ignore data files
+*.npy
+
+# Ignore data and model folders
+Data
+Models
+
+# ignore models, keras model contents, and model checkpoints
+checkpoint*
+*.ckpt.*
+*.h5
+*.pb
+
+assets
+variables
+
+# ignore model results
+results*
+
+# ignore csv files
+*.csv
+
+# ignore images and videos
+*.mp4
+*.png
+*.jpg
+*.jpeg
+
+# ignore ipynb files
+# *.ipynb
+
+# ignore build files
+build/
+dist/
+cvpr.egg-info/
+
+# ignore checkpoints folders
+*[Cc]heckpoints*
