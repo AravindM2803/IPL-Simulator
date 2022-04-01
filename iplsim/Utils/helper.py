@@ -4,14 +4,14 @@ import numpy as np
 import random
 import pickle
 from IPython.display import display
-import tensorflow as tf
+
 
 with open('Data/BF_Cols', 'rb') as fp:
     BF_Cols = pickle.load(fp)
 with open('Data/BS_Cols', 'rb') as fp:
     BS_Cols = pickle.load(fp)
-model_inn_1 = tf.keras.models.load_model('Models/Inn1_SimpleRNN_10.h5')
-model_inn_2 = tf.keras.models.load_model('Models/Inn2_LSTM_10.h5')
+# model_inn_1 = tf.keras.models.load_model('Models/Inn1_SimpleRNN_10.h5')
+# model_inn_2 = tf.keras.models.load_model('Models/Inn2_LSTM_10.h5')
 
 
 def display_batting_table(inn1, onlybatting=0):
@@ -414,7 +414,7 @@ class Innings:
             self.df = self.df.astype(int)
             q = model.predict(np.expand_dims(
                 np.array([self.df.iloc[-1], ]), axis=0))
-            q = [i for i in q[0][0]]
+            q = [i for i in q[0]]
             if self.Free_Hit == 1:
                 for i in free_hit_not_possible:
                     q[i] = 0
@@ -881,8 +881,8 @@ class Innings:
 
 
 class Match:
-    def __init__(self, TeamA, TeamB, Venue, model_inn_1=model_inn_1,
-                 model_inn_2=model_inn_2, Display=0, Result=1):
+    def __init__(self, TeamA, TeamB, Venue, model_inn_1,
+                 model_inn_2, Display=0, Result=1):
         self.inn1 = 0
         self.inn2 = 0
         model_inn_1.reset_states()
