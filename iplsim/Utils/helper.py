@@ -6,7 +6,7 @@ import pickle
 from IPython.display import display
 
 
-with open('Data/BF_Cols', 'rb') as fp:
+with open('Data/BF_Cols.pkl', 'rb') as fp:
     BF_Cols = pickle.load(fp)
 with open('Data/BS_Cols', 'rb') as fp:
     BS_Cols = pickle.load(fp)
@@ -61,7 +61,7 @@ def display_batting_table(inn1, onlybatting=0):
         temp_df = pd.concat([temp_df, df_dictionary], ignore_index=True)
 
     # Creating Bowling Line Up
-    for i in bowling_lineup:
+    for i in set(bowling_lineup):
         a = [k.Name for k in i.Wickets_Taken]
         bowling_dict = {"Bowler": i.Name,
                         "Runs Conceded": i.Runs_Conceded,
@@ -112,65 +112,6 @@ def display_batting_table(inn1, onlybatting=0):
         display(temp_over_summary)
 
 
-RCB_Pitch = "M Chinnaswamy Stadium"
-RCB_Batting = ["Royal Challengers Bangalore", "CH Gayle",
-               "V Kohli", "AB de Villiers", "KL Rahul",
-               "SR Watson", "Sachin Baby", "STR Binny",
-               "CJ Jordan", "Iqbal Abdulla", "YS Chahal", "S Aravind"]
-RCB_Bowling = ["Royal Challengers Bangalore", "S Aravind", "CJ Jordan",
-               "CH Gayle", "YS Chahal", "SR Watson"]
-RCB_Squad = [RCB_Batting, RCB_Bowling]
-
-SRH_Pitch = "Rajiv Gandhi International Stadium, Uppal"
-SRH_Batting = ["Sunrisers Hyderabad", "DA Warner", "S Dhawan", "MC Henriques",
-               "Yuvraj Singh", "DJ Hooda", "BCJ Cutting", "NV Ojha",
-               "Bipul Sharma", "B Kumar", "BB Sran",
-               "Mustafizur Rahman"]
-
-SRH_Bowling = ["Sunrisers Hyderabad", "B Kumar", "BB Sran",
-               "BCJ Cutting", "Mustafizur Rahman", "MC Henriques"]
-
-SRH_Squad = [SRH_Batting, SRH_Bowling]
-
-DC_Pitch = "Feroz Shah Kotla"
-
-DC_Batting = ["Delhi Daredevils", "S Dhawan", "SPD Smith",
-              "AM Rahane", "RR Pant",
-              "SS Iyer", "MP Stoinis", "AR Patel", "R Ashwin",
-              "CR Woakes", "K Rabada", "A Mishra"]
-DC_Bowling = ["Delhi Daredevils", "CR Woakes", "MP Stoinis", "R Ashwin",
-              "A Mishra", "K Rabada"]
-DC_Squad = [DC_Batting, DC_Bowling]
-
-MI_Pitch = "Wankhede Stadium"
-MI_Batting = ["Mumbai Indians", "PA Patel", "JC Buttler",
-              "RG Sharma", "HH Pandya",
-              "KA Pollard", "KH Pandya", "Harbhajan Singh", "MJ McClenaghan",
-              "TG Southee", "JJ Bumrah", "SL Malinga"
-              ]
-MI_Bowling = ["Mumbai Indians", "TG Southee", "Harbhajan Singh",
-              "MJ McClenaghan", "JJ Bumrah", "SL Malinga"]
-MI_Squad = [MI_Batting, MI_Bowling]
-
-KXIP_Pitch = "Holkar Cricket Stadium"
-KXIP_Batting = ["Kings XI Punjab", "HM Amla", "M Vohra",
-                "MP Stoinis", "GJ Maxwell", "DA Miller", "WP Saha",
-                "Sandeep Sharma", "VR Aaron", "AR Patel",
-                "MM Sharma", "I Sharma"
-                ]
-KXIP_Bowling = ["Kings XI Punjab", "Sandeep Sharma", "VR Aaron", "AR Patel",
-                "MM Sharma", "I Sharma"]
-KXIP_Squad = [KXIP_Batting, KXIP_Bowling]
-
-CSK_Pitch = "MA Chidambaram Stadium, Chepauk"
-CSK_Batting = ["Chennai Super Kings", "F du Plessis", "RV Uthappa",
-               "SK Raina", "AT Rayudu", "KM Jadhav",
-               "MS Dhoni", "RA Jadeja",
-               "DJ Bravo", "KV Sharma", "DL Chahar",
-               "SN Thakur"]
-CSK_Bowling = ["Chennai Super Kings", "DL Chahar",
-               "SN Thakur", "KV Sharma", "RA Jadeja", "DJ Bravo"]
-CSK_Squad = [CSK_Batting, CSK_Bowling]
 # display_batting_table(inn1)
 res_to_string = """Retired Hurt
 dot ball
@@ -307,7 +248,10 @@ class Innings:
         return [Batsman(x) for x in batting]
 
     def init_bowlers(self, bowlers):
-        return [Bowler(x) for x in bowlers]
+        bowler_name_to_pointer = {}
+        for x in set(bowlers):
+            bowler_name_to_pointer[x] = Bowler(x)
+        return [bowler_name_to_pointer[x] for x in bowlers]
 
     def get_next_batsman(self):
         if self.Wickets < 10:
@@ -318,7 +262,7 @@ class Innings:
     def get_next_bowler(self):
         if self.Overs == 20 and self.Balls == 6:
             return self.Bowler
-        return self.Bowling_lineup[(self.Overs-1) % 5]
+        return self.Bowling_lineup[(self.Overs-1) % len(self.Bowling_lineup)]
 
     def get_next_ball(self):
         if self.Balls == 6:
@@ -348,28 +292,46 @@ class Innings:
                     non_striker_runs, non_striker_balls, bowler,
                     bowler_runs, bowler_overs, bowler_balls, bowler_wickets):
         n_row = {x: 0 for x in self.df.columns}
-        n_row['Current_Score'] = score
-        n_row['Wickets'] = wickets
-        n_row['Overs'] = overs
-        n_row['Balls'] = balls
-        n_row['Free_Hit'] = free_hit
-
-        n_row['Striker_Runs'] = striker_runs
-        n_row['Striker_Balls'] = striker_balls
-        n_row['Non_Striker_Runs'] = non_striker_runs
-        n_row['Non_Striker_Balls'] = non_striker_balls
-        n_row['Bowler_Runs'] = bowler_runs
-        n_row['Bowler_Overs'] = bowler_overs
-        n_row['Bowler_Balls'] = bowler_balls
-        n_row['Bowler_Wickets'] = bowler_wickets
-
-        n_row['Toss_'+toss] = 1
-        n_row['Venue_'+venue] = 1
-        n_row['Batting_Team_'+batting_team] = 1
-        n_row['Bowling_Team_'+bowling_team] = 1
-        n_row['Striker_'+striker] = 1
-        n_row['Non_Striker_'+non_striker] = 1
-        n_row['Bowler_'+bowler] = 1
+        if 'Current_Score' in self.df.columns:
+            n_row['Current_Score'] = score
+        if 'Wickets' in self.df.columns:
+            n_row['Wickets'] = wickets
+        if 'Overs' in self.df.columns:
+            n_row['Overs'] = overs
+        if 'Balls' in self.df.columns:
+            n_row['Balls'] = balls
+        if 'Free_Hit' in self.df.columns:
+            n_row['Free_Hit'] = free_hit
+        if 'Striker_Runs' in self.df.columns:
+            n_row['Striker_Runs'] = striker_runs
+        if 'Striker_Balls' in self.df.columns:
+            n_row['Striker_Balls'] = striker_balls
+        if 'Non_Striker_Runs' in self.df.columns:
+            n_row['Non_Striker_Runs'] = non_striker_runs
+        if 'Non_Striker_Balls' in self.df.columns:
+            n_row['Non_Striker_Balls'] = non_striker_balls
+        if 'Bowler_Runs' in self.df.columns:
+            n_row['Bowler_Runs'] = bowler_runs
+        if 'Bowler_Overs' in self.df.columns:
+            n_row['Bowler_Overs'] = bowler_overs
+        if 'Bowler_Balls' in self.df.columns:
+            n_row['Bowler_Balls'] = bowler_balls
+        if 'Bowler_Wickets' in self.df.columns:
+            n_row['Bowler_Wickets'] = bowler_wickets
+        if 'Toss_'+toss in self.df.columns:
+            n_row['Toss_'+toss] = 1
+        if 'Venue_'+venue in self.df.columns:
+            n_row['Venue_'+venue] = 1
+        if 'Batting_Team_'+batting_team in self.df.columns:
+            n_row['Batting_Team_'+batting_team] = 1
+        if 'Bowling_Team_'+bowling_team in self.df.columns:
+            n_row['Bowling_Team_'+bowling_team] = 1
+        if 'Striker_'+striker in self.df.columns:
+            n_row['Striker_'+striker] = 1
+        if 'Non_Striker_'+non_striker in self.df.columns:
+            n_row['Non_Striker_'+non_striker] = 1
+        if 'Bowler_'+bowler in self.df.columns:
+            n_row['Bowler_'+bowler] = 1
 
         if self.Target > 0:
             n_row['Target'] = self.Target
