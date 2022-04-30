@@ -336,19 +336,40 @@ class Innings:
         if self.Target > 0:
             n_row['Target'] = self.Target
 
-        return n_row
+        progress_row = {}
+        progress_row["score"] = score
+        progress_row["wickets"] = wickets
+        progress_row["overs"] = overs
+        progress_row["balls"] = balls
+        progress_row["free_hit"] = free_hit
+        progress_row["striker"] = striker
+        progress_row["striker_runs"] = striker_runs
+        progress_row["striker_balls"] = striker_balls
+        progress_row["non_striker"] = non_striker
+        progress_row["non_striker_runs"] = non_striker_runs
+        progress_row["non_striker_balls"] = non_striker_balls
+        progress_row["bowler"] = bowler
+        progress_row["bowler_runs"] = bowler_runs
+        progress_row["bowler_overs"] = bowler_overs
+        progress_row["bowler_balls"] = bowler_balls
+        progress_row["bowler_wickets"] = bowler_wickets
+        return n_row, progress_row
 
     def simulate_inning(self, model):
-
+        innings_progress_dic = {}
+        progress_row_count = 0
         free_hit_not_possible = [8, 9, 10, 12]
-
         while(True):
             if self.innings == 1:
                 if (self.Overs > 20 or self.Wickets == 10):
+                    self.inn_progress_df = pd.DataFrame.from_dict(
+                        innings_progress_dic, orient='index')
                     return self.Runs+1
             elif self.innings == 2:
                 if (self.Overs > 20 or
                         self.Wickets == 10 or self.Runs >= self.Target):
+                    self.inn_progress_df = pd.DataFrame.from_dict(
+                        innings_progress_dic, orient='index')
                     if self.Runs >= self.Target:
                         return (self.Batting_Team + " won by "
                                 + str(10-self.Wickets)+" Wickets", 1)
@@ -356,19 +377,20 @@ class Innings:
                         return (self.Bowling_Team + " won by "
                                 + str(self.Target-self.Runs-1)+" Runs", 0)
 
-            curr_row = self.get_new_row(self.Runs, self.Wickets, self.Overs,
-                                        self.Balls, self.Free_Hit, self.Toss,
-                                        self.Venue, self.Batting_Team,
-                                        self.Bowling_Team, self.Striker.Name,
-                                        self.Striker.Runs, self.Striker.Balls,
-                                        self.Non_Striker.Name,
-                                        self.Non_Striker.Runs,
-                                        self.Non_Striker.Balls,
-                                        self.Bowler.Name,
-                                        self.Bowler.Runs_Conceded,
-                                        self.Bowler.Overs_Bowled,
-                                        self.Bowler.Balls_Bowled,
-                                        len(self.Bowler.Wickets_Taken))
+            curr_row, progress_dic = self.get_new_row(
+                self.Runs, self.Wickets, self.Overs,
+                self.Balls, self.Free_Hit, self.Toss,
+                self.Venue, self.Batting_Team,
+                self.Bowling_Team, self.Striker.Name,
+                self.Striker.Runs, self.Striker.Balls,
+                self.Non_Striker.Name,
+                self.Non_Striker.Runs,
+                self.Non_Striker.Balls,
+                self.Bowler.Name,
+                self.Bowler.Runs_Conceded,
+                self.Bowler.Overs_Bowled,
+                self.Bowler.Balls_Bowled,
+                len(self.Bowler.Wickets_Taken))
 
             self.df = self.df[0:0]
             df_dictionary = pd.DataFrame([curr_row])
@@ -382,7 +404,9 @@ class Innings:
                     q[i] = 0
 
             res = random.choices(range(0, 57), weights=q, k=1)[0]
-
+            progress_dic["result"] = res
+            innings_progress_dic[progress_row_count] = progress_dic
+            progress_row_count += 1
             self.ball_prediction(res)
 
     def ball_prediction(self, res):
