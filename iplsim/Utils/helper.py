@@ -8,13 +8,13 @@ from IPython.display import display
 
 with open('Data/BF_Cols.pkl', 'rb') as fp:
     BF_Cols = pickle.load(fp)
-with open('Data/BS_Cols', 'rb') as fp:
+with open('Data/BS_Cols.pkl', 'rb') as fp:
     BS_Cols = pickle.load(fp)
 # model_inn_1 = tf.keras.models.load_model('Models/Inn1_SimpleRNN_10.h5')
 # model_inn_2 = tf.keras.models.load_model('Models/Inn2_LSTM_10.h5')
 
 
-def display_batting_table(inn1, onlybatting=0):
+def display_batting_table(inn1, display_level=1):
     batting_lineup = inn1.Batting_lineup
     bowling_lineup = inn1.Bowling_lineup
     temp_df = pd.DataFrame(columns=["Batsman", "Runs", "Fours",
@@ -104,7 +104,7 @@ def display_batting_table(inn1, onlybatting=0):
     print()
     display(temp_df)
     print()
-    if onlybatting == 0:
+    if display_level == 1:
         display(temp_bowling)
         print()
         display(temp_stages)
@@ -891,8 +891,8 @@ class Match:
                 if Display:
                     print(TeamA[0][0]+" won the toss and chose to ", end='')
                     print("Bat first")
-                    display_batting_table(self.inn1)
-                    display_batting_table(self.inn2)
+                    display_batting_table(self.inn1, display_level=Display-1)
+                    display_batting_table(self.inn2, display_level=Display-1)
                     print(result)
                 elif Result:
                     print(result)
@@ -909,8 +909,8 @@ class Match:
                 if Display:
                     print(TeamA[0][0]+" won the toss and chose to ", end='')
                     print("Bowl first")
-                    display_batting_table(self.inn1)
-                    display_batting_table(self.inn2)
+                    display_batting_table(self.inn1, display_level=Display-1)
+                    display_batting_table(self.inn2, display_level=Display-1)
                     print(result)
                 elif Result:
                     print(result)
@@ -929,8 +929,8 @@ class Match:
                 if Display:
                     print(TeamB[0][0]+" won the toss and chose to ", end='')
                     print("Bat first")
-                    display_batting_table(self.inn1)
-                    display_batting_table(self.inn2)
+                    display_batting_table(self.inn1, display_level=Display-1)
+                    display_batting_table(self.inn2, display_level=Display-1)
                     print(result)
                 elif Result:
                     print(result)
@@ -948,8 +948,8 @@ class Match:
                 if Display:
                     print(TeamB[0][0]+" won the toss and chose to ", end='')
                     print("Bowl first")
-                    display_batting_table(self.inn1)
-                    display_batting_table(self.inn2)
+                    display_batting_table(self.inn1, display_level=Display-1)
+                    display_batting_table(self.inn2, display_level=Display-1)
                     print(result)
                 elif Result:
                     print(result)
