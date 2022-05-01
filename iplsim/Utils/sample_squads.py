@@ -42,8 +42,13 @@ MI_Batting = ["Mumbai Indians", "PA Patel", "JC Buttler",
               "KA Pollard", "KH Pandya", "Harbhajan Singh", "MJ McClenaghan",
               "TG Southee", "JJ Bumrah", "SL Malinga"
               ]
-MI_Bowling = ["Mumbai Indians", "TG Southee", "Harbhajan Singh",
-              "MJ McClenaghan", "JJ Bumrah", "SL Malinga"]
+MI_Bowling = ["Mumbai Indians", "TG Southee", "SL Malinga", "TG Southee",
+              "SL Malinga", "TG Southee", "JJ Bumrah", "Harbhajan Singh",
+              "JJ Bumrah", "Harbhajan Singh", "MJ McClenaghan",
+              "Harbhajan Singh", "MJ McClenaghan", "KH Pandya",
+              "MJ McClenaghan", "Harbhajan Singh",
+              "JJ Bumrah", "SL Malinga", "TG Southee",
+              "JJ Bumrah", "SL Malinga"]
 MI_Squad = [MI_Batting, MI_Bowling]
 
 KXIP_Pitch = "Holkar Cricket Stadium"
