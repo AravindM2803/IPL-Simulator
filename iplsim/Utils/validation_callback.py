@@ -1,4 +1,16 @@
 import tensorflow as tf
+from Utils.data_generator import LiteDataGenerator as DataGenerator
+
+
+def create_validation_sets(df, start_ends, window_size=6, batch_size=64):
+    validation_sets = []
+    for (start, end) in start_ends:
+        validation_sets.append(
+            (DataGenerator(df, window_size, batch_size,
+                           validate=True,
+                           overs_start=start,
+                           overs_end=end), f"Overs: {start}-{end}"))
+    return validation_sets
 
 
 class AdditionalValidationSets(tf.keras.callbacks.Callback):
