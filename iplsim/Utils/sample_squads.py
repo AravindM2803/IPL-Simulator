@@ -1,6 +1,6 @@
 RCB_Pitch = "M Chinnaswamy Stadium"
-RCB_Batting = ["Royal Challengers Bangalore", "CH Gayle",
-               "V Kohli", "AB de Villiers", "KL Rahul",
+RCB_Batting = ["Royal Challengers Bangalore", "PA Patel",
+               "KL Rahul", "V Kohli", "AB de Villiers",
                "SR Watson", "KD Karthik", "CH Morris",
                "HV Patel", "N Saini", "YS Chahal", "Mohammed Siraj"]
 RCB_Bowling = ["Royal Challengers Bangalore", "Mohammed Siraj",
