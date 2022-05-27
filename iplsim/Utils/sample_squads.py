@@ -78,3 +78,12 @@ CSK_Bowling = ["Chennai Super Kings", "DL Chahar",
                "DJ Bravo", "SN Thakur",
                "DJ Bravo", "DL Chahar", "DJ Bravo"]
 CSK_Squad = [CSK_Batting, CSK_Bowling]
+
+RR_Batting = ["Rajasthan Royals", "AM Rahane",
+              "JC Buttler", "SPD Smith",
+              "RA Tripathi", "BA Stokes",
+              "STR Binny", "S Gopal",
+              "VR Aaron", "DS Kulkarni",
+              "JD Unadkat"
+
+              ]
