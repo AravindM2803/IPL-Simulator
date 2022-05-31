@@ -1,5 +1,6 @@
 import pandas as pd
 import pickle
+from tqdm import tqdm
 from Utils.helper import Innings, display_batting_table
 import itertools
 import random
@@ -20,10 +21,10 @@ with open('Data/BS_Cols.pkl', 'rb') as fp:
 
 
 class EvaluationMetrics():
-    def __init__(self, model_inn1, model_inn2, load_path=None):
+    def __init__(self, model_inn1, model_inn2, load_path=None, step=5):
         self.bowler_stat = {}
         self.batsmen_stat = {}
-        self.step = 5
+        self.step = step
         self.models = [model_inn1, model_inn2]
         self.progression_stat = {
             "runs": [[] for _ in range(int(20/self.step))],
@@ -138,7 +139,8 @@ class EvaluationMetrics():
                 self.progression_stat["wickets"][ind].append(
                     progression_wicket_lis[ind])
             count += 1
-        self.total_stat.append(inn.Runs)
+        if innings == 1:
+            self.total_stat.append(inn.Runs)
         self.progress_df_list.append(inn.inn_progress_df)
         if verbose:
             display_batting_table(inn, display_level=verbose-1)
@@ -234,3 +236,378 @@ class EvaluationMetrics():
         else:
             b -= 1
         return o*6 + b
+
+
+class ActualStats():
+    def __init__(self, load_path=None, step=5):
+        self.BF_df = pd.read_csv("Data/Batting_First.csv")
+        self.BS_df = pd.read_csv("Data/Chasing.csv")
+        self.bowler_stat = {}
+        self.batsmen_stat = {}
+        self.step = step
+        self.progression_stat = {
+            "runs": [[] for _ in range(int(20/self.step))],
+            "wickets": [[] for _ in range(int(20/self.step))],
+        }
+        self.total_stat = []
+
+        self.curr_score = None
+        self.wickets = 0
+        self.batsman_dict = {}
+        self.bowler_dict = {}
+        self.progression_subdict = None
+
+        if load_path is not None:
+            self.load_object(load_path)
+
+    def load_object(self, load_path):
+        with open(load_path, "rb") as fp:
+            saved_evaluator = pickle.load(fp)
+        self.bowler_stat = saved_evaluator["bowler_stat"]
+        self.batsmen_stat = saved_evaluator["batsmen_stat"]
+        self.progression_stat = saved_evaluator["progression_stat"]
+        self.total_stat = saved_evaluator["total_stat"]
+
+    def save_object(self, save_path):
+        save_evaluator = {}
+        save_evaluator["bowler_stat"] = self.bowler_stat
+        save_evaluator["batsmen_stat"] = self.batsmen_stat
+        save_evaluator["progression_stat"] = self.progression_stat
+        save_evaluator["total_stat"] = self.total_stat
+        with open(save_path, "wb") as fp:
+            pickle.dump(save_evaluator, fp)
+
+    def new_match(self, innings):
+        if innings == 1 and self.curr_score is not None:
+            self.total_stat.append(self.curr_score)
+        for batsman_name in self.batsman_dict:
+            if batsman_name not in self.batsmen_stat:
+                self.batsmen_stat[batsman_name] = [
+                    self.batsman_dict[batsman_name]]
+            else:
+                self.batsmen_stat[batsman_name].append(
+                    self.batsman_dict[batsman_name])
+        for bowler_name in self.bowler_dict:
+            if bowler_name not in self.bowler_stat:
+                self.bowler_stat[bowler_name] = [self.bowler_dict[bowler_name]]
+            else:
+                self.bowler_stat[bowler_name].append(
+                    self.bowler_dict[bowler_name])
+        if self.progression_subdict is not None:
+            for key in self.progression_subdict:
+                for ind, value in enumerate(self.progression_subdict[key]):
+                    self.progression_stat[key][ind].append(value)
+
+        self.curr_score = 0
+        self.wickets = 0
+        self.batsman_dict = {}
+        self.bowler_dict = {}
+        self.progression_subdict = {
+            "runs": [0 for i in range(int(20/self.step))],
+            "wickets": [0 for i in range(int(20/self.step))],
+        }
+
+    def update_dic(self, row):
+        res = row["Result"]
+        bowler = row["Bowler"]
+        batsman = row["Striker"]
+        non_striker = row["Non_Striker"]
+        wickets_thisball = 0
+        runs_thisball = 0
+        if res == 0:
+            wickets_thisball = 1
+            self.bowler_dict[bowler]["Runs Conceded"] += 0
+            self.bowler_dict[bowler]["Balls"] += 1
+            self.batsman_dict[batsman]["Dismissal Type"] = "Retired Hurt"
+
+        elif 1 <= res <= 7:
+            runs_thisball = res-1
+            self.batsman_dict[batsman]["Runs"] += res-1
+            self.batsman_dict[batsman]["Balls Faced"] += 1
+            self.bowler_dict[bowler]["Runs Conceded"] += res-1
+            self.bowler_dict[bowler]["Balls"] += 1
+            if res-1 == 4:
+                self.batsman_dict[batsman]["Fours"] += 1
+            elif res-1 == 6:
+                self.batsman_dict[batsman]["Sixes"] += 1
+
+        elif 8 <= res <= 13:
+            wickets_thisball = 1
+            self.batsman_dict[batsman]["Balls Faced"] += 1
+            self.bowler_dict[bowler]["Balls"] += 1
+            if res != 13:
+                self.batsman_dict[batsman]["Dismissed By"] = bowler
+                self.bowler_dict[bowler]["Wickets Taken"] += 1
+            if res == 8:
+                self.batsman_dict[batsman]["Dismissal Type"] = "Bowled"
+            if res == 9:
+                self.batsman_dict[batsman]["Dismissal Type"] = "Caught"
+            if res == 10:
+                self.batsman_dict[batsman]["Dismissal Type"] = "LBW"
+            if res == 11:
+                self.batsman_dict[batsman]["Dismissal Type"] = "Stumped"
+            if res == 12:
+                self.batsman_dict[batsman]["Dismissal Type"] = "Hit Wicket"
+            if res == 13:
+                self.batsman_dict[batsman][
+                    "Dismissal Type"] = "Obstructing the Field"
+
+        elif 50 <= res <= 54:
+            runs_thisball = res-49
+            self.bowler_dict[bowler]["Runs Conceded"] += res-49
+
+        # No ball runs scored by byes/leg byes
+        elif 46 <= res <= 49:
+            runs_thisball = res-44
+            self.bowler_dict[bowler]["Runs Conceded"] += res-44
+            self.batsman_dict[batsman]["Balls Faced"] += 1
+
+        # No ball but runs scored
+        elif (40 <= res <= 45):
+            runs_thisball = res-39
+            self.batsman_dict[batsman]["Runs"] += res-40
+            self.batsman_dict[batsman]["Fours"] += 1
+            self.batsman_dict[batsman]["Sixes"] += 1
+            self.batsman_dict[batsman]["Balls Faced"] += 1
+            self.bowler_dict[bowler]["Runs Conceded"] += res-39
+
+        # Leg byes/byes
+        elif (36 <= res <= 39):
+            runs_thisball = res-35
+            self.batsman_dict[batsman]["Balls Faced"] += 1
+            self.bowler_dict[bowler]["Balls"] += 1
+
+        # Normal Runouts
+        elif (14 <= res <= 21):
+            wickets_thisball = 1
+            # 0 runs non striker out
+            if res == 14:
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[non_striker]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+
+            # 0 runs striker out
+            elif res == 15:
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+
+            # 1 run non striker out
+            elif res == 16:
+                runs_thisball = 1
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Runs"] += 1
+                self.batsman_dict[non_striker]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+                self.bowler_dict[bowler]["Runs Conceded"] += 1
+
+            # 1 run striker out
+            elif res == 17:
+                runs_thisball = 1
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Runs"] += 1
+                self.batsman_dict[batsman]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+                self.bowler_dict[bowler]["Runs Conceded"] += 1
+
+            # 2 run non striker out
+            elif res == 18:
+                runs_thisball = 2
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Runs"] += 2
+                self.batsman_dict[non_striker]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+                self.bowler_dict[bowler]["Runs Conceded"] += 2
+
+            # 2 run striker out
+            elif res == 19:
+                runs_thisball = 2
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Runs"] += 2
+                self.batsman_dict[batsman]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+                self.bowler_dict[bowler]["Runs Conceded"] += 2
+
+            # 3 run non striker out
+            elif res == 20:
+                runs_thisball = 3
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Runs"] += 3
+                self.batsman_dict[non_striker]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+                self.bowler_dict[bowler]["Runs Conceded"] += 3
+
+            # 3 run striker out
+            elif res == 21:
+                runs_thisball = 3
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Runs"] += 3
+                self.batsman_dict[batsman]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+                self.bowler_dict[bowler]["Runs Conceded"] += 3
+
+        elif (34 <= res <= 35):
+            runs_thisball = 1
+            wickets_thisball = 1
+            # stumped wide
+            if (res == 34):
+                self.batsman_dict[batsman]["Dismissal Type"] = "Stumped"
+                self.batsman_dict[batsman]["Dismissed By"] = bowler
+                self.bowler_dict[bowler]["Runs Conceded"] += 1
+                self.bowler_dict[bowler]["Wickets Taken"] += 1
+
+            # stumped no ball
+            if (res == 35):
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Dismissal Type"] = "Stumped"
+                self.batsman_dict[batsman]["Dismissed By"] = bowler
+                self.bowler_dict[bowler]["Runs Conceded"] += 1
+                self.bowler_dict[bowler]["Wickets Taken"] += 1
+
+        # Leg bye/bye runnout
+        elif (24 <= res <= 29):
+            wickets_thisball = 1
+            # Leg bye non striker runnout 1
+            if (res == 24):
+                runs_thisball = 1
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[non_striker]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+
+            # Leg bye striker runnout 1
+            elif (res == 25):
+                runs_thisball = 1
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+
+            # Leg bye non striker runnout 2
+            elif (res == 26):
+                runs_thisball = 2
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[non_striker]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+
+            # Leg bye striker runnout 2
+            elif (res == 27):
+                runs_thisball = 2
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+
+            # Leg bye non striker runnout 3
+            elif (res == 28):
+                runs_thisball = 3
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[non_striker]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+
+            # Leg bye striker runnout 3
+            elif (res == 29):
+                runs_thisball = 3
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Balls"] += 1
+
+        elif (30 <= res <= 33):
+            wickets_thisball = 1
+            # Wide, 0 actual runs runout non striker
+            if (res == 30):
+                runs_thisball = 1
+                self.batsman_dict[non_striker]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Runs Conceded"] += 1
+
+            elif res == 31:
+                runs_thisball = 1
+                self.batsman_dict[batsman]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Runs Conceded"] += 1
+
+            # Wide, 1 run non striker out
+            elif (res == 32):
+                runs_thisball = 2
+                self.batsman_dict[non_striker]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Runs Conceded"] += 2
+
+            # Wide, 1 run striker out
+            elif (res == 33):
+                runs_thisball = 2
+                self.batsman_dict[batsman]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Runs Conceded"] += 2
+
+        # Noball runout
+        elif (22 <= res <= 23 or 55 <= res <= 56):
+            wickets_thisball = 1
+            # No ball, 0 actual runs runout non striker
+            if (res == 55):
+                runs_thisball = 1
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[non_striker]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Runs Conceded"] += 1
+
+            # No ball, 0 run striker out
+            elif (res == 56):
+                runs_thisball = 1
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Runs Conceded"] += 1
+
+            # Noball, 1 run non striker out
+            elif (res == 22):
+                runs_thisball = 2
+                self.batsman_dict[batsman]["Runs"] += 1
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[non_striker]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Runs Conceded"] += 2
+
+            # Noball, 1 run striker out
+            elif (res == 23):
+                runs_thisball = 2
+                self.batsman_dict[batsman]["Runs"] += 1
+                self.batsman_dict[batsman]["Balls Faced"] += 1
+                self.batsman_dict[batsman]["Dismissal Type"] = "Run Out"
+                self.bowler_dict[bowler]["Runs Conceded"] += 2
+
+        self.curr_score += runs_thisball
+        self.wickets += wickets_thisball
+        ind = (row["Overs"] - 1)//self.step
+        self.progression_subdict["runs"][ind] += runs_thisball
+        self.progression_subdict["wickets"][ind] += wickets_thisball
+
+    def run_df(self, innings, verbose=False):
+        if innings == 1:
+            df = self.BF_df
+        elif innings == 2:
+            df = self.BS_df
+        prev_row = (None, None, None, None)
+        for _, row in tqdm(df.iterrows(), ncols=80,
+                           total=df.shape[0], disable=not verbose):
+            curr_row = (row["Toss"], row["Venue"],
+                        row["Batting_Team"], row["Bowling_Team"])
+            if prev_row != curr_row:
+                self.new_match(innings)
+            prev_row = curr_row
+            if (row["Striker"] not in self.batsman_dict):
+                self.batsman_dict[row["Striker"]] = {
+                    "Runs": 0,
+                    "Fours": 0,
+                    "Sixes": 0,
+                    "Balls Faced": 0,
+                    "Dismissal Type": "-",
+                    "Dismissed By": "-"
+                }
+            if (row["Non_Striker"] not in self.batsman_dict):
+                self.batsman_dict[row["Non_Striker"]] = {
+                    "Runs": 0,
+                    "Fours": 0,
+                    "Sixes": 0,
+                    "Balls Faced": 0,
+                    "Dismissal Type": "-",
+                    "Dismissed By": "-"
+                }
+            if (row["Bowler"] not in self.bowler_dict):
+                self.bowler_dict[row["Bowler"]] = {
+                    "Runs Conceded": 0,
+                    "Wickets Taken": 0,
+                    "Balls": 0,
+                }
+            self.update_dic(row)
