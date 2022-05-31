@@ -182,6 +182,18 @@ class EvaluationMetrics():
         display(points_table_df)
 
     def reinitialize_tournament(self):
+        table_keys = ["Played", "Wins", "Losses", "Points",
+                      "ByRuns", "ByBalls", "AgRuns", "AgBalls"]
+        self.season_table = {
+            'Chennai Super Kings': {i: 0 for i in table_keys},
+            'Royal Challengers Bangalore': {i: 0 for i in table_keys},
+            'Rajasthan Royals': {i: 0 for i in table_keys},
+            'Mumbai Indians': {i: 0 for i in table_keys},
+            'Sunrisers Hyderabad': {i: 0 for i in table_keys},
+            'Delhi Capitals': {i: 0 for i in table_keys},
+            'Kings XI Punjab': {i: 0 for i in table_keys},
+            'Kolkata Knight Riders': {i: 0 for i in table_keys},
+        }
         self.form_matches()
 
     def simulate_match(self, verbose=0):
