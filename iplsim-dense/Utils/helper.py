@@ -461,9 +461,12 @@ class Innings:
                                     self.Bowler, self.Overs, self.Runs)
             elif (res == 13):
                 self.Striker.update(
-                    0, 1, "Obstructing the Field", self.Bowler,
+                    0, 1, "Obstructing the Field", None,
                     self.Overs, self.Runs)
-            self.Bowler.update(0, 1, self.Striker)  # Update Bowler
+            if res != 13:
+                self.Bowler.update(0, 1, self.Striker)  # Update Bowler
+            else:
+                self.Bowler.update(0, 1)
             self.Striker = self.get_next_batsman()
             if (res == 9 or res == 13):
                 ran = random.choices([0, 1], weights=(0.3, 0.7))[0]
@@ -622,7 +625,7 @@ class Innings:
                     self.swap_batsman()
                 self.get_next_ball()
 
-            # 2 run striker out
+            # 3 run striker out
             elif (res == 21):
                 self.Runs += 3
                 self.Wickets += 1
