@@ -111,7 +111,7 @@ RR_Batting = ["Rajasthan Royals", "AM Rahane",
               ]
 
 RR_Pitch = "Sawai Mansingh Stadium"
-RR_Bowling = ["Rajastan Royals", "JD Unadkat",
+RR_Bowling = ["Rajasthan Royals", "JD Unadkat",
               "DS Kulkarni", "JD Unadkat",
               "DS Kulkarni", "JD Unadkat",
               "DS Kulkarni", "R Parag",
