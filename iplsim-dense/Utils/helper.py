@@ -291,51 +291,31 @@ class Innings:
                     non_striker_runs, non_striker_balls, bowler,
                     bowler_runs, bowler_overs, bowler_balls, bowler_wickets):
         n_row = {x: 0 for x in self.df.columns}
-        if 'Current_Score' in self.set_df_cols:
-            n_row['Current_Score'] = score
-        if 'Wickets' in self.set_df_cols:
-            n_row['Wickets'] = wickets
-        if 'Overs' in self.set_df_cols:
-            n_row['Overs'] = overs
-        if 'Balls' in self.set_df_cols:
-            n_row['Balls'] = balls
-        if 'Free_Hit' in self.set_df_cols:
-            n_row['Free_Hit'] = free_hit
-        if 'Striker_Runs' in self.set_df_cols:
-            n_row['Striker_Runs'] = striker_runs
-        if 'Striker_Balls' in self.set_df_cols:
-            n_row['Striker_Balls'] = striker_balls
-        if 'Non_Striker_Runs' in self.set_df_cols:
-            n_row['Non_Striker_Runs'] = non_striker_runs
-        if 'Non_Striker_Balls' in self.set_df_cols:
-            n_row['Non_Striker_Balls'] = non_striker_balls
-        if 'Bowler_Runs' in self.set_df_cols:
-            n_row['Bowler_Runs'] = bowler_runs
-        if 'Bowler_Overs' in self.set_df_cols:
-            n_row['Bowler_Overs'] = bowler_overs
-        if 'Bowler_Balls' in self.set_df_cols:
-            n_row['Bowler_Balls'] = bowler_balls
-        if 'Bowler_Wickets' in self.set_df_cols:
-            n_row['Bowler_Wickets'] = bowler_wickets
-        if 'Toss_'+toss in self.set_df_cols:
-            n_row['Toss_'+toss] = 1
-        if 'Venue_'+venue in self.set_df_cols:
-            n_row['Venue_'+venue] = 1
-        if 'Batting_Team_'+batting_team in self.set_df_cols:
-            n_row['Batting_Team_'+batting_team] = 1
-        if 'Bowling_Team_'+bowling_team in self.set_df_cols:
-            n_row['Bowling_Team_'+bowling_team] = 1
-        if 'Striker_'+striker in self.set_df_cols:
-            n_row['Striker_'+striker] = 1
-        if 'Non_Striker_'+non_striker in self.set_df_cols:
-            n_row['Non_Striker_'+non_striker] = 1
-        if 'Bowler_'+bowler in self.set_df_cols:
-            n_row['Bowler_'+bowler] = 1
+        n_row['Current_Score'] = score
+        n_row['Wickets'] = wickets
+        n_row['Overs'] = overs
+        n_row['Balls'] = balls
+        n_row['Free_Hit'] = free_hit
+        n_row['Striker_Runs'] = striker_runs
+        n_row['Striker_Balls'] = striker_balls
+        n_row['Non_Striker_Runs'] = non_striker_runs
+        n_row['Non_Striker_Balls'] = non_striker_balls
+        n_row['Bowler_Runs'] = bowler_runs
+        n_row['Bowler_Overs'] = bowler_overs
+        n_row['Bowler_Balls'] = bowler_balls
+        n_row['Bowler_Wickets'] = bowler_wickets
+        n_row['Toss_'+toss] = 1
+        n_row['Venue_'+venue] = 1
+        n_row['Batting_Team_'+batting_team] = 1
+        n_row['Bowling_Team_'+bowling_team] = 1
+        n_row['Striker_'+striker] = 1
+        n_row['Non_Striker_'+non_striker] = 1
+        n_row['Bowler_'+bowler] = 1
         if 'Required_Runs' in self.set_df_cols:
             n_row['Required_Runs'] = self.Target - score
 
-        if self.Target > 0 and 'Target' in self.set_df_cols:
-            n_row['Target'] = self.Target
+        # if self.Target > 0 and 'Target' in self.set_df_cols:
+        #     n_row['Target'] = self.Target
 
         progress_row = {}
         progress_row["score"] = score
