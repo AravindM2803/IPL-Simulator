@@ -658,9 +658,11 @@ class ActualStats():
             row, update_other_stats=False)
         final_score = row["Current_Score"] + runs_thisball
         first_innings_score = row["Target"] - 1
-        ret["Final Score"] = [final_score, row["Wickets"] + wickets_thisball]
+        ret["Final_Score"] = [final_score, row["Wickets"] + wickets_thisball]
         ret["First_Innings_Score"] = first_innings_score
         ret["Overs"] = [row["Overs"] - 1, row["Balls"]]
+        ret["Chasing_Team"] = row["Batting_Team"]
+        ret["Defending_Team"] = row["Bowling_Team"]
         if final_score > first_innings_score:
             outcome = 1
         elif final_score == first_innings_score:
