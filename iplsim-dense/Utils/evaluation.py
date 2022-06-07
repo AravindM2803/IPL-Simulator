@@ -258,7 +258,7 @@ class EvaluationMetrics():
 
 
 class ActualStats():
-    def __init__(self, load_path=None, step=5):
+    def __init__(self, load_path=None, step=5, intervals=None):
         self.BF_df = pd.read_csv("Data/Batting_First.csv")
         self.BS_df = pd.read_csv("Data/Chasing.csv")
         self.bowler_stat = {}
@@ -268,6 +268,17 @@ class ActualStats():
             "runs": [[] for _ in range(int(20/self.step))],
             "wickets": [[] for _ in range(int(20/self.step))],
         }
+        if intervals is not None:
+            self.intervals = intervals
+        else:
+            self.intervals = ((1, 6), (7, 10), (11, 15), (16, 20))
+        self.new_progression_stat = {"runs": {i: [] for i in self.intervals},
+                                     "wickets": {
+                                         i: [] for i in self.intervals}, }
+        self.over_to_interval = {}
+        for interval in self.intervals:
+            for i in range(interval[0], interval[1]+1):
+                self.over_to_interval[i] = interval
         self.total_stat = []
         self.chasing_stat = []
 
@@ -276,6 +287,7 @@ class ActualStats():
         self.batsman_dict = {}
         self.bowler_dict = {}
         self.progression_subdict = None
+        self.new_progression_subdict = None
 
         if load_path is not None:
             self.load_object(load_path)
@@ -286,6 +298,7 @@ class ActualStats():
         self.bowler_stat = saved_evaluator["bowler_stat"]
         self.batsmen_stat = saved_evaluator["batsmen_stat"]
         self.progression_stat = saved_evaluator["progression_stat"]
+        self.new_progression_stat = saved_evaluator["new_progression_stat"]
         self.total_stat = saved_evaluator["total_stat"]
         self.chasing_stat = saved_evaluator["chasing_stat"]
 
@@ -294,6 +307,7 @@ class ActualStats():
         save_evaluator["bowler_stat"] = self.bowler_stat
         save_evaluator["batsmen_stat"] = self.batsmen_stat
         save_evaluator["progression_stat"] = self.progression_stat
+        save_evaluator["new_progression_stat"] = self.new_progression_stat
         save_evaluator["total_stat"] = self.total_stat
         save_evaluator["chasing_stat"] = self.chasing_stat
         with open(save_path, "wb") as fp:
@@ -319,6 +333,13 @@ class ActualStats():
             for key in self.progression_subdict:
                 for ind, value in enumerate(self.progression_subdict[key]):
                     self.progression_stat[key][ind].append(value)
+        if self.new_progression_subdict is not None:
+            for key in self.new_progression_subdict:
+                for interval in self.intervals:
+                    if self.last_over_inn < interval[1]:
+                        continue
+                    self.new_progression_stat[key][interval].append(
+                        self.new_progression_subdict[key][interval])
 
         self.curr_score = 0
         self.wickets = 0
@@ -328,6 +349,9 @@ class ActualStats():
             "runs": [0 for i in range(int(20/self.step))],
             "wickets": [0 for i in range(int(20/self.step))],
         }
+        self.new_progression_subdict = {
+            "runs": {i: 0 for i in self.intervals},
+            "wickets": {i: 0 for i in self.intervals}}
 
     def update_dic(self, row, update_other_stats=True):
         res = row["Result"]
@@ -647,6 +671,12 @@ class ActualStats():
             ind = (row["Overs"] - 1)//self.step
             self.progression_subdict["runs"][ind] += runs_thisball
             self.progression_subdict["wickets"][ind] += wickets_thisball
+            self.last_over_inn = row["Overs"]
+            self.new_progression_subdict[
+                "runs"][self.over_to_interval[row["Overs"]]] += runs_thisball
+            self.new_progression_subdict[
+                "wickets"][
+                    self.over_to_interval[row["Overs"]]] += wickets_thisball
         if not update_other_stats:
             return runs_thisball, wickets_thisball
 
