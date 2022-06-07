@@ -16,6 +16,7 @@ settings.json
 Data
 Models
 Evaluation
+Paper
 
 # ignore models, keras model contents, and model checkpoints
 checkpoint*
