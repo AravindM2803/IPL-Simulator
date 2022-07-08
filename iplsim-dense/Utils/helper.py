@@ -133,14 +133,14 @@ Wkt run out non striker 2 runs
 Wkt run out striker 2 runs
 Wkt run out non striker 3 runs
 Wkt run out striker 3 runs
-Wkt run out no ball non striker total 2 runs
-Wkt run out no ball striker total 2 runs
-Wkt run out non striker 1 run (extras)
-Wkt run out striker 1 run (extras)
-Wkt run out non striker 2 runs (extras)
-Wkt run out striker 2 runs (extras)
-Wkt run out non striker 3 runs (extras)
-Wkt run out striker 3 runs (extras)
+Wkt run out (no ball) non striker total 2 runs
+Wkt run out (no ball) striker total 2 runs
+Wkt run out non striker 1 run (LB/byes)
+Wkt run out striker 1 run (LB/byes)
+Wkt run out non striker 2 runs (LB/byes)
+Wkt run out striker 2 runs (LB/byes)
+Wkt run out non striker 3 runs (LB/byes)
+Wkt run out striker 3 runs (LB/byes)
 Wkt run out (wide) non striker total 1 run (1 run for wide)
 Wkt run out (wide) striker total 1 run (1 run for wide)
 Wkt run out (wide) non striker total 2 runs (1 for wide and 1 by running)
@@ -157,17 +157,17 @@ No ball + 2 runs
 No ball + 3 runs
 No ball + 4 runs
 No ball + 6 runs
-No ball + 1 run (extras)
-No ball + 2 runs (extras)
-No ball + 3 runs (extras)
-No ball + 4 runs (extras)
+No ball + 1 run (LB/byes)
+No ball + 2 runs (LB/byes)
+No ball + 3 runs (LB/byes)
+No ball + 4 runs (LB/byes)
 Wide + 0 runs
 Wide + 1 run
 Wide + 2 runs
 Wide + 3 runs
 Wide + 4 runs
-Wkt runout noball non striker total 1 run
-Wkt runout noball striker total 1 run"""
+Wkt runout (no ball) non striker total 1 run
+Wkt runout (no ball) striker total 1 run"""
 res_to_string = res_to_string.split("\n")
 
 
