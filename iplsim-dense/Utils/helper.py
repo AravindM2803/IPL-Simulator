@@ -111,63 +111,63 @@ def display_batting_table(inn1, display_level=1):
 
 
 # display_batting_table(inn1)
-res_to_string = """Retired Hurt
-dot ball
+res_to_string = """Retired hurt
+Dot ball
 1 run
 2 runs
 3 runs
 4 runs
 5 runs
 6 runs
-Wkt Bowled
-Wkt Caught
+Wkt bowled
+Wkt caught
 Wkt LBW
-Wkt Stump
-Wkt Hit Wicket
-Wkt Obstructing the Field
-Wkt runout non striker 0
-Wkt runnout striker 0
-Wkt runnout non striker 1
-Wkt runnout striker 1
-Wkt runnout non striker 2
-Wkt runnout striker 2
-Wkt runnout non striker 3
-Wkt runnout striker 3
-Wkt runout No ball non striker total 2 runs
-Wkt runnout No ball striker total 2 runs
-Wkt runnout non striker 1 Extras
-Wkt runnout striker 1 Extras
-Wkt runnout non striker 2 Extras
-Wkt runnout striker 2 Extras
-Wkt runnout non striker 3 Extras
-Wkt runnout striker 3 Extras
-Wkt Runnout Ball_Not_Counted non striker 1 (1 run for Wide)
-Wkt Runnout Ball_Not_Counted striker 1
-Wkt Runnout Ball_Not_Counted non striker 2 (1 for wide and another by running)
-Wkt Runnout Ball_Not_Counted striker 2
-Wkt Stump Ball_Not_Counted 1
-Wkt Stump No ball 1
-LB/Byes 1
-LB/Byes 2
-LB/Byes 3
-LB/Byes 4
-No ball 0
-No ball 1
-No ball 2
-No ball 3
-No ball 4
-No ball 6
-No ball 1 Extras
-No ball 2 Extras
-No ball 3 Extras
-No ball 4 Extras
-Wide 0
-Wide 1
-Wide 2
-Wide 3
-Wide 4
-Wkt runout Noball non striker total 1 run
-Wkt runout Noball striker total 1 run"""
+Wkt stump
+Wkt hit wicket
+Wkt obstructing the field
+Wkt runout non striker 0 runs
+Wkt run out striker 0 runs
+Wkt run out non striker 1 run
+Wkt run out striker 1 run
+Wkt run out non striker 2 runs
+Wkt run out striker 2 runs
+Wkt run out non striker 3 runs
+Wkt run out striker 3 runs
+Wkt run out no ball non striker total 2 runs
+Wkt run out no ball striker total 2 runs
+Wkt run out non striker 1 run (extras)
+Wkt run out striker 1 run (extras)
+Wkt run out non striker 2 runs (extras)
+Wkt run out striker 2 runs (extras)
+Wkt run out non striker 3 runs (extras)
+Wkt run out striker 3 runs (extras)
+Wkt run out (wide) non striker total 1 run (1 run for wide)
+Wkt run out (wide) striker total 1 run (1 run for wide)
+Wkt run out (wide) non striker total 2 runs (1 for wide and 1 by running)
+Wkt run out (wide) striker total 2 runs (1 for wide and 1 by running)
+Wkt stump (wide) total 1 run
+Wkt stump (no ball) total 1 run
+LB/byes 1 run
+LB/byes 2 runs
+LB/byes 3 runs
+LB/byes 4 runs
+No ball + 0 runs
+No ball + 1 run
+No ball + 2 runs
+No ball + 3 runs
+No ball + 4 runs
+No ball + 6 runs
+No ball + 1 run (extras)
+No ball + 2 runs (extras)
+No ball + 3 runs (extras)
+No ball + 4 runs (extras)
+Wide + 0 runs
+Wide + 1 run
+Wide + 2 runs
+Wide + 3 runs
+Wide + 4 runs
+Wkt runout noball non striker total 1 run
+Wkt runout noball striker total 1 run"""
 res_to_string = res_to_string.split("\n")
 
 
@@ -641,7 +641,7 @@ class Innings:
 
         elif (24 <= res <= 29):
 
-            # Leg bye non striker runnout 1
+            # Leg bye non striker run out 1
             if (res == 24):
                 self.Extras += 1
                 self.Runs += 1
