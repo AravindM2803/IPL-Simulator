@@ -33,11 +33,12 @@ results*
 # ignore csv files
 *.csv
 
-# ignore images and videos
+# ignore images and videos and pdfs
 *.mp4
 *.png
 *.jpg
 *.jpeg
+*.pdf
 
 # ignore ipynb files
 # *.ipynb
