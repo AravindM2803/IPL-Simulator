@@ -39,6 +39,7 @@ results*
 *.jpg
 *.jpeg
 *.pdf
+*.zip
 
 # ignore ipynb files
 # *.ipynb
