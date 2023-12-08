@@ -22,7 +22,7 @@ Images*
 # ignore models, keras model contents, and model checkpoints
 checkpoint*
 *.ckpt.*
-*.h5
+# *.h5
 *.pb
 
 assets
