@@ -17,6 +17,7 @@ Data
 Models
 Evaluation
 Paper
+Images*
 
 # ignore models, keras model contents, and model checkpoints
 checkpoint*
@@ -40,14 +41,3 @@ results*
 *.jpeg
 *.pdf
 *.zip
-
-# ignore ipynb files
-# *.ipynb
-
-# ignore build files
-build/
-dist/
-cvpr.egg-info/
-
-# ignore checkpoints folders
-*[Cc]heckpoints*

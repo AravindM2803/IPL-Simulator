@@ -6,9 +6,9 @@ import pickle
 from IPython.display import display
 
 
-with open('Data/BF_Cols.pkl', 'rb') as fp:
+with open('GitData/BF_Cols.pkl', 'rb') as fp:
     BF_Cols = pickle.load(fp)
-with open('Data/BS_Cols.pkl', 'rb') as fp:
+with open('GitData/BS_Cols.pkl', 'rb') as fp:
     BS_Cols = pickle.load(fp)
 
 
@@ -381,7 +381,7 @@ class Innings:
             self.df = pd.concat([self.df, df_dictionary], ignore_index=True)
             self.df = self.df.astype(int)
             model_inp = self.df.values
-            q = model.predict(np.array(model_inp))
+            q = model.predict(np.array(model_inp), verbose=0)
             q = [i for i in q[0]]
             if self.Free_Hit == 1:
                 for i in free_hit_not_possible:
