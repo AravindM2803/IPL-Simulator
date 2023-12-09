@@ -1,8 +1,6 @@
-Here is a possible README file for your repository in markdown format:
-
 # IPL-Simulator
 
-This repository contains the code and data for the paper "DynaSim: A Ball-by-Ball Simulation of the Dynamics of an IPL T20 Game" by Aravind Subramanya Mysore, Vishal Bharadwaj, Rithik R. Mali and Bhaskarjyoti Das.
+This repository contains the code and data for the paper ["DynaSim: A Ball-by-Ball Simulation of the Dynamics of an IPL T20 Game" by Aravind Subramanya Mysore, Vishal Bharadwaj, Rithik R. Mali and Bhaskarjyoti Das.](https://link.springer.com/chapter/10.1007/978-981-99-2468-4_29)
 
 The paper presents a novel approach to simulate the ball-by-ball progression of a cricket match, specifically the Indian Premier League (IPL) T20 format. The approach uses deep neural networks to predict the outcome of each ball, considering the current state of the game and the historical and contextual features of the players and teams involved. The paper also evaluates the realism and accuracy of the simulations by comparing them with actual IPL matches.
 
